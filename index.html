@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hidden Environmental Impact of Artificial Intelligence</title>
+    <style>
+        /* --- 1. CORE VARIABLES & FONTS --- */
+        :root {
+            --color-primary: #047857; /* Deep Emerald Green */
+            --color-secondary: #3B82F6; /* Bright Sky Blue */
+            --color-background: #F0FDF4; /* Very Light Green/Mint */
+            --color-text: #1F2937; /* Dark Grey/Slate */
+            --color-alert: #EF4444; /* Bright Red */
+            --color-card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif; /* Fallback for modern look */
+            background-color: var(--color-background);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            /* Enable snapping for full slide view */
+            scroll-snap-type: y mandatory;
+        }
+
+        /* --- 2. SLIDE LAYOUT --- */
+        .slide {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            scroll-snap-align: start;
+            transition: background-color 0.5s ease;
+        }
+
+        .slide-content {
+            max-width: 900px;
+            width: 95%;
+            padding: 2.5rem;
+            background: var(--color-card-bg);
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border: 2px solid #E5E7EB;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth animation */
+        }
+
+        .slide.active .slide-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* --- 3. TITLE SLIDE SPECIFIC STYLING --- */
+        #slide-0 {
+            background: radial-gradient(circle at center, #D1FAE5 0%, var(--color-background) 70%);
+            overflow: hidden;
+        }
+
+        @keyframes ecoGlow {
+            0%, 100% { box-shadow: 0 0 40px rgba(4, 120, 87, 0.5); }
+            50% { box-shadow: 0 0 60px rgba(59, 130, 246, 0.5); }
+        }
+
+        #title-card {
+            animation: ecoGlow 8s infinite alternate;
+            border: 3px solid var(--color-primary);
+        }
+        
+        /* Presenter Name Glow */
+        #presenters {
+            position: absolute;
+            bottom: 50px;
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* --- 4. NAVIGATION CONTROLS --- */
+        #nav-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn, #slide-status {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: var(--color-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background-color: #9CA3AF;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #slide-status {
+            background-color: #E5E7EB;
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+        }
+
+        /* --- 5. CONTENT CARDS & ICONS --- */
+        h1 { font-size: 3rem; font-weight: 800; color: var(--color-primary); margin-bottom: 1rem; }
+        h2 { font-size: 2.25rem; font-weight: 700; color: var(--color-secondary); margin-bottom: 1.5rem; border-bottom: 3px solid #E5E7EB; padding-bottom: 0.5rem; }
+        h3 { font-size: 1.5rem; font-weight: 600; color: var(--color-text); margin-top: 1rem; margin-bottom: 0.5rem; }
+        p, li { font-size: 1.1rem; line-height: 1.6; }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .card {
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border-left: 5px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #F8FAF8;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Color classes for cards */
+        .card.green { border-left-color: var(--color-primary); background-color: #ECFDF5; }
+        .card.blue { border-left-color: var(--color-secondary); background-color: #EFF6FF; }
+        .card.red { border-left-color: var(--color-alert); background-color: #FEF2F2; }
+
+        .emoji {
+            font-size: 2rem;
+            margin-right: 0.5rem;
+            line-height: 1;
+        }
+
+        /* Key points styling */
+        .key-data {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-alert);
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.8rem; }
+            h3 { font-size: 1.3rem; }
+            .slide-content { padding: 1.5rem; }
+            #presenters { font-size: 1.2rem; bottom: 80px; }
+            .nav-btn, #slide-status { padding: 0.6rem 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Controls -->
+    <div id="nav-controls">
+        <button id="prev-btn" class="nav-btn">← Previous</button>
+        <div id="slide-status">1 / 12</div>
+        <button id="next-btn" class="nav-btn">Next →</button>
+    </div>
+
+    <!-- 1. Title & Credits -->
+    <section id="slide-0" class="slide active" data-index="0">
+        <div class="slide-content text-center" id="title-card">
+            <span class="emoji" style="font-size: 4rem;">💡⚙️</span>
+            <h1>The Hidden Environmental Impact of Artificial Intelligence</h1>
+            <p style="font-size: 1.4rem; color: var(--color-secondary); font-style: italic;">
+                Discover how AI affects our planet — in ways we rarely see 🌍
+            </p>
+        </div>
+        <div id="presenters">
+            Made by Rihab Hamdi & Meriam Daadaa
+        </div>
+    </section>
+
+    <!-- 2. Overview -->
+    <section id="slide-1" class="slide" data-index="1">
+        <div class="slide-content">
+            <h2 style="color: var(--color-primary);">Overview: The AI Footprint 🌱</h2>
+            <p>We'll unpack the environmental costs associated with the entire lifecycle of modern Artificial Intelligence, from the moment a chip is mined to the moment the model is used.</p>
+            <div class="card-grid">
+                <div class="card green">
+                    <span class="emoji">🔋</span> Energy & Carbon Costs
+                </div>
+                <div class="card blue">
+                    <span class="emoji">💧</span> Data Centres & Water
+                </div>
+                <div class="card red">
+                    <span class="emoji">♻️</span> Hardware & E-waste
+                </div>
+                <div class="card green">
+                    <span class="emoji">🪨</span> Supply Chain & Mining
+                </div>
+                <div class="card blue">
+                    <span class="emoji">🔄</span> Indirect & Rebound Effects
+                </div>
+                <div class="card red">
+                    <span class="emoji">🧭</span> Solutions & Policy
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Energy & Carbon Footprint -->
+    <section id="slide-2" class="slide" data-index="2">
+        <div class="slide-content">
+            <h2>Energy & Carbon Footprint 🔋</h2>
+            <p>Modern AI, especially large language models (LLMs), requires a phenomenal amount of electricity, which translates directly to carbon emissions if not powered by renewables.</p>
+            <div class="card-grid">
+                <div class="card red">
+                    <h3>Training: The High Cost 🔥</h3>
+                    <p>Training a single large model like GPT-3 can consume as much energy as **100 homes** use in a year. </p>
+                    <div class="key-data" style="color: var(--color-alert);">~300,000 kg CO2</div>
+                </div>
+                <div class="card blue">
+                    <h3>Inference: Widespread Use 💡</h3>
+                    <p>Every query you send to a chatbot or image generator consumes energy. AI is typically **5x to 10x more energy-intensive** than a traditional Google search.</p>
+                    <div class="key-data" style="color: var(--color-secondary);">Millions of Queries</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Data Centres & Water -->
+    <section id="slide-3" class="slide" data-index="3">
+        <div class="slide-content">
+            <h2>Data Centres & Water 💧</h2>
+            <p>The vast servers running AI generate immense heat. To keep them cool and running, data centres rely heavily on water, often in large, evaporative cooling towers.</p>
+            <div class="card-grid">
+                <div class="card blue">
+                    <h3>The Hidden Thirst</h3>
+                    <p>A single major data centre can use **millions of gallons of water** daily, impacting local supplies.</p>
+                </div>
+                <div class="card red">
+                    <h3>Water Stress</h3>
+                    <p>When these centres are located in regions already facing **drought or water scarcity**, their demand can be disastrous for local communities and agriculture.</p>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 1.5rem; font-weight: bold; color: var(--color-primary);">
+                Did you know? Chatting with an AI uses approximately 500ml of water for cooling.
+            </p>
+        </div>
+    </section>
+
+    <!-- 5. Hardware & E-waste -->
+    <section id="slide-4" class="slide" data-index="4">
+        <div class="slide-content">
+            <h2>Hardware & E-waste ♻️</h2>
+            <p>The race for faster AI models demands constant hardware upgrades (GPUs, TPUs). This creates a cycle of electronic waste and shortens device lifespans.</p>
+            <div class="card-grid">
+                <div class="card green">
+                    <h3>Rapid Obsolescence</h3>
+                    <p>Specialized AI chips are often replaced every **3-4 years**. Functioning hardware is discarded simply because newer, faster hardware is available.</p>
+                </div>
+                <div class="card red">
+                    <h3>Toxic Waste</h3>
+                    <p>E-waste contains toxic elements like lead, mercury, and cadmium. Less than **20%** of global e-waste is properly recycled, contaminating soil and water.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Supply Chain & Rare Materials -->
+    <section id="slide-5" class="slide" data-index="5">
+        <div class="slide-content">
+            <h2>Supply Chain & Rare Materials 🪨</h2>
+            <p>AI needs parts that come from the Earth — and they aren’t endless. The journey from mining to chip fabrication carries a huge environmental burden.</p>
+            <ul style="list-style: none; padding-left: 0; margin-top: 1rem;">
+                <li class="card blue" style="margin-bottom: 1rem;">
+                    <span class="emoji">⛏️</span> **Resource Depletion:** AI chips depend on **rare earth minerals** (e.g., cobalt, lithium, palladium) which require environmentally destructive mining.
+                </li>
+                <li class="card green">
+                    <span class="emoji">🏭</span> **Embodied Carbon:** The energy consumed during **manufacturing** (fabricating the chip and board) can account for up to **80%** of a server's total lifetime carbon footprint.
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 7. Indirect & Rebound Effects -->
+    <section id="slide-6" class="slide" data-index="6">
+        <div class="slide-content">
+            <h2>Indirect & Rebound Effects 🔄</h2>
+            <p>This is the **Jevons Paradox**. Even if AI helps us make processes more efficient (e.g., optimizing logistics), the lower cost and increased availability often leads to *more* overall consumption.</p>
+            <div class="card blue">
+                <h3>The Efficiency Trap 📈</h3>
+                <p>Example: AI makes data centre operations 20% more efficient. Instead of saving that 20% of energy, companies launch *new, bigger* AI models that use even more than the original system. The efficiency gain is "rebounded" into increased demand.</p>
+            </div>
+            <p style="text-align: center; margin-top: 1.5rem; color: var(--color-secondary); font-style: italic;">
+                Greater efficiency does not always mean lower environmental impact.
+            </p>
+        </div>
+    </section>
+
+    <!-- 8. Mitigation Strategies -->
+    <section id="slide-7" class="slide" data-index="7">
+        <div class="slide-content">
+            <h2>Mitigation Strategies 🌍</h2>
+            <p>We can steer AI toward sustainability through mindful practice and technical innovation.</p>
+            <div class="card-grid">
+                <div class="card green">
+                    <span class="emoji">♻️</span> **Responsible Energy Sourcing**
+                    <p>Mandate that data centres run on **100% renewable energy** (solar, wind, hydro) and use advanced cooling methods (liquid cooling).</p>
+                </div>
+                <div class="card green">
+                    <span class="emoji">⚙️</span> **Efficient Model Design**
+                    <p>Develop smaller, **"smarter" models** that achieve high performance with less training data and lower computational cost (e.g., model compression).</p>
+                </div>
+                <div class="card green">
+                    <span class="emoji">💡</span> **Lifecycle & Reuse**
+                    <p>Implement standardized programs for **repairing and repurposing** AI hardware, moving away from the "disposable chip" mindset.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. Policy & Governance -->
+    <section id="slide-8" class="slide" data-index="8">
+        <div class="slide-content">
+            <h2>Policy & Governance 🧭</h2>
+            <p>Governments and regulatory bodies have a crucial role in setting the standards for green AI.</p>
+            <ul style="list-style: none; padding-left: 0; margin-top: 1rem;">
+                <li class="card blue" style="margin-bottom: 1rem;">
+                    <span class="emoji">📝</span> **Mandatory Reporting:** Companies should be required to publicly report the **carbon and water footprint** of major AI training runs.
+                </li>
+                <li class="card blue" style="margin-bottom: 1rem;">
+                    <span class="emoji">💸</span> **Incentivize Green Compute:** Offer tax breaks or subsidies for using **low-carbon data centres** and investing in recycling infrastructure.
+                </li>
+                <li class="card blue">
+                    <span class="emoji">🤝</span> **Global Standards:** Create international agreements to enforce **ethical and traceable sourcing** of rare earth materials.
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 10. Case Studies -->
+    <section id="slide-9" class="slide" data-index="9">
+        <div class="slide-content">
+            <h2>Case Studies: Progress in Practice 💡</h2>
+            <p>Here are examples of how the industry is starting to respond:</p>
+            <div class="card-grid">
+                <div class="card green">
+                    <h3>Project ICE 🧊</h3>
+                    <p>A major tech firm built a data center near the Arctic Circle to leverage **natural cold air**, dramatically reducing the need for powered cooling and lowering overall energy use.</p>
+                </div>
+                <div class="card green">
+                    <h3>Model Compressors</h3>
+                    <p>Researchers are developing tools to "shrink" large models after training, allowing them to run on smaller, less power-hungry hardware for everyday tasks without significant loss of quality.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. Conclusion & Call to Action -->
+    <section id="slide-10" class="slide" data-index="10">
+        <div class="slide-content text-center">
+            <h2 style="color: var(--color-primary); border-bottom: none;">Conclusion & Call to Action ✨</h2>
+            <p style="font-size: 1.3rem; margin-bottom: 2rem;">
+                AI is an incredible tool, but its power comes with an environmental price. We must use it **responsibly and with full transparency** to ensure its benefits don't compromise our planet.
+            </p>
+            <blockquote style="font-size: 1.5rem; font-style: italic; color: var(--color-secondary); padding: 1.5rem; border-left: 5px solid var(--color-secondary); margin: 2rem 0;">
+                "We need to stop thinking about AI as only a technological tool and start viewing it as an environmental actor."
+            </blockquote>
+            <h3 style="color: var(--color-alert); font-size: 1.8rem; margin-top: 2rem;">
+                Demand **Green AI**!
+            </h3>
+        </div>
+    </section>
+
+    <!-- 12. References & Further Reading -->
+    <section id="slide-11" class="slide" data-index="11">
+        <div class="slide-content">
+            <h2 style="color: var(--color-secondary);">References & Further Reading 📚</h2>
+            <p>For those interested in diving deeper into the research:</p>
+            <ul style="list-style: none; padding-left: 0; margin-top: 1rem;">
+                <li class="card blue" style="margin-bottom: 0.75rem;">
+                    <span class="emoji">📄</span> Strubell, E. et al. (2019). Energy and Policy Considerations for Deep Learning in NLP.
+                </li>
+                <li class="card blue" style="margin-bottom: 0.75rem;">
+                    <span class="emoji">📄</span> Patterson, D. et al. (2021). The Carbon Footprint of Machine Learning.
+                </li>
+                <li class="card blue">
+                    <span class="emoji">📄</span> Zhou, Y. et al. (2023). Deep Learning and the Water Crisis. *Nature Sustainability*.
+                </li>
+            </ul>
+            <p style="text-align: center; margin-top: 2rem; font-size: 0.9rem; color: #6B7280;">
+                Thank you for your attention.
+            </p>
+        </div>
+    </section>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let currentIndex = 0;
+        const statusElement = document.getElementById('slide-status');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        // Function to update the view
+        function updateSlide(newIndex) {
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                // Deactivate old slide and activate new one for CSS animation
+                slides[currentIndex].classList.remove('active');
+                currentIndex = newIndex;
+                slides[currentIndex].classList.add('active');
+
+                // Scroll the viewport smoothly
+                slides[currentIndex].scrollIntoView({ behavior: 'smooth' });
+
+                // Update controls
+                statusElement.textContent = `${currentIndex + 1} / ${totalSlides}`;
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex === totalSlides - 1;
+            }
+        }
+
+        // --- Event Listeners ---
+
+        // 1. Button Navigation
+        prevBtn.addEventListener('click', () => updateSlide(currentIndex - 1));
+        nextBtn.addEventListener('click', () => updateSlide(currentIndex + 1));
+
+        // 2. Keyboard Navigation (Arrow Keys)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { // Spacebar for next
+                updateSlide(currentIndex + 1);
+            } else if (e.key === 'ArrowLeft') {
+                updateSlide(currentIndex - 1);
+            }
+        });
+
+        // 3. Scroll Listener (Optional: for scroll snapping context)
+        // Ensure the active state is correct if the user scrolls manually
+        window.addEventListener('scroll', () => {
+            let closestIndex = 0;
+            let minDistance = Infinity;
+            
+            slides.forEach((slide, index) => {
+                const rect = slide.getBoundingClientRect();
+                const distance = Math.abs(rect.top);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestIndex = index;
+                }
+            });
+
+            if (closestIndex !== currentIndex) {
+                // Update CSS classes when slide changes
+                slides[currentIndex].classList.remove('active');
+                currentIndex = closestIndex;
+                slides[currentIndex].classList.add('active');
+                
+                // Update controls
+                statusElement.textContent = `${currentIndex + 1} / ${totalSlides}`;
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex === totalSlides - 1;
+            }
+        });
+
+        // Initial setup
+        updateSlide(0);
+    </script>
+</body>
+</html>
